@@ -30,6 +30,11 @@ jobs:
       - name: Lint with Black
         run: black --check .
 
+      - name: Load required environment variables
+        run: |
+          echo "MODE=DEBUG" >> $GITHUB_ENV
+          echo "SECRET_KEY=sdfhjkljksdfjkh-key-erm-what-the-sigma" >> $GITHUB_ENV
+
       - name: Run tests
         run: coverage run manage.py test
 
