@@ -1,0 +1,60 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Update Item{% endblock %}
+{% block content %}
+<h1>Update Item</h1>
+<form method="POST" class="d-flex gap-2 flex-column">
+  {% csrf_token %}
+  {% if form.name.errors %}
+  {% for error in form.name.errors %}
+  <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endfor %}
+  {% endif %}
+  <div class="form-floating">
+    <input
+      class="form-control"
+      type="text"
+      name="{{ form.name.name }}"
+      id="{{ form.name.id_for_label }}"
+      placeholder="Name"
+      value="{{ object.name }}"
+      required
+    />
+    <label for="{{ form.name.id_for_label }}">Name</label>
+  </div> 
+  {% if form.description.errors %}
+  {% for error in form.description.errors %}
+  <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endfor %}
+  {% endif %}
+  <div class="form-floating">
+    <textarea
+      class="form-control"
+      name="{{ form.description.name }}"
+      id="{{ form.description.id_for_label }}"
+      style="height: 10rem"
+      placeholder="Description"
+      required
+    >{{ object.description }}</textarea>
+    <label for="{{ form.description.id_for_label }}">Description</label>
+  </div> 
+  {% if form.price_in_cents.errors %}
+  {% for error in form.price_in_cents.errors %}
+  <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endfor %}
+  {% endif %}
+  <div class="form-floating">
+    <input
+      class="form-control"
+      type="number"
+      name="{{ form.price_in_cents.name }}"
+      id="{{ form.price_in_cents.id_for_label }}"
+      placeholder="Price in cents"
+      value="{{ object.price_in_cents }}"
+      required
+    />
+    <label for="{{ form.price_in_cents.id_for_label }}">Price in cents</label>
+  </div> 
+  <input class="btn btn-primary" type="submit" value="Submit">
+</form>
+{% endblock %}

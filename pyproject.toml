@@ -5,3 +5,6 @@ show_missing = true
 [tool.pytest.ini_options]
 addopts = "-v"
 testpaths = ["tests"]
+
+[tool.black]
+line_length = 79

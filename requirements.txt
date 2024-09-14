@@ -3,6 +3,7 @@ black==24.8.0
 click==8.1.7
 coverage==7.6.1
 Django==5.1.1
+django-browser-reload==1.15.0
 django-stubs-ext==5.0.4
 mypy==1.11.2
 mypy-extensions==1.0.0

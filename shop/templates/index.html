@@ -1,0 +1,28 @@
+{% extends 'shop/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Shop Dashboard</h1>
+<section class="d-flex gap-2 mb-4">
+  <a class="btn btn-primary" href="{% url 'item-index' %}">Manage Items</a>
+  <a class="btn btn-secondary" href="">Checkout</a>
+</section>
+<section>
+  {% if items %}
+  <div class="bg-body-secondary my-2" style="height: 1px"></div>
+  <h2>Items</h2>
+  <div class="d-flex gap-2 overflow-x-scroll" style="height: 12rem; box-sizing: content-box">
+    {% for item in items %}
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{ item.name }}</h1>
+        <p class="card-text">{{ item.description }}</p>
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'item-detail' item.id %}">Details</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
