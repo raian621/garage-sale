@@ -16,12 +16,10 @@ class ItemListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(ItemListView, self).get_context_data(**kwargs)
         paginator = Paginator(self.get_queryset(), self.paginate_by)
-        page_number = self.request.GET.get('page')
+        page_number = self.request.GET.get("page")
         page_obj = paginator.get_page(page_number)
         objects = page_obj.object_list
-        costs = list(map(
-            lambda item: item.format_price(), objects
-        ))
+        costs = list(map(lambda item: item.format_price(), objects))
         context["object_list"] = zip(objects, costs)
         context["page_obj"] = page_obj
         return context
