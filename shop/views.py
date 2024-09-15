@@ -1,5 +1,5 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.list import ListView
+from django.views.generic.list import ListView, View
 from django.views.generic import DetailView
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -54,6 +54,14 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
 class ItemDeleteView(LoginRequiredMixin, DeleteView):
     model = Item
     success_url = reverse_lazy("item-index")
+
+
+class CheckoutView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, "checkout.html")
+
+    def post(self, request, *args, **kwargs):
+        pass
 
 
 def shop_index(request):

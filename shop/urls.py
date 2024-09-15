@@ -12,4 +12,5 @@ urlpatterns = [
     path(
         "delete/<int:pk>/", views.ItemDeleteView.as_view(), name="item-delete"
     ),
+    path("checkout", views.CheckoutView.as_view(), name="checkout"),
 ]
