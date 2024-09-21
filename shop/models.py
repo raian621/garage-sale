@@ -1,6 +1,7 @@
 from django.db import models, transaction
 from django.utils.timezone import make_aware
 from datetime import datetime, timezone
+from typing import List
 
 # Create your models here.
 
@@ -27,6 +28,7 @@ class Order(models.Model):
     email = models.EmailField(null=True, blank=True)
     items = models.ManyToManyField(Item)
     total_in_cents = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(null=True, blank=True)
     checked_out = models.DateTimeField(null=True, blank=True)
 
     class Meta:

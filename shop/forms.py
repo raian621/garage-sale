@@ -1,6 +1,6 @@
 from django.forms.models import ModelForm
 from django import forms
-from .models import Item
+from .models import Item, Order
 
 
 class UpdateItemForm(ModelForm):
@@ -12,3 +12,9 @@ class UpdateItemForm(ModelForm):
             "description": forms.Textarea(),
             "price_in_cents": forms.NumberInput(),
         }
+
+
+class CheckoutForm(ModelForm):
+    class Meta:
+        model = Order
+        exclude = []

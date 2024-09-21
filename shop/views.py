@@ -1,10 +1,13 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView, View
 from django.views.generic import DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.paginator import Paginator
+from django.core.serializers import serialize
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Item
-from .forms import UpdateItemForm
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseNotAllowed
+from .models import Item, Order
+from .forms import UpdateItemForm, CheckoutForm
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import render
 
@@ -56,14 +59,41 @@ class ItemDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("item-index")
 
 
-class CheckoutView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        return render(request, "checkout.html")
-
-    def post(self, request, *args, **kwargs):
-        pass
+class OrderListView(LoginRequiredMixin, ListView):
+    model = Order
 
 
 def shop_index(request):
     items = Item.objects.all()[:10]
     return render(request, "index.html", context={"items": items})
+
+
+@login_required
+def checkout(request):
+    if request.method == "GET":
+        return render(
+            request, "shop/checkout.html", context={"form": CheckoutForm}
+        )
+    elif request.method == "POST":
+        return HttpResponse("POST")
+    return HttpResponseNotAllowed(["GET", "POST"])
+
+
+def get_items(request):
+    if request.method != "GET":
+        return HttpResponseNotAllowed(["GET"])
+    name = request.GET.get("name", None)
+    if name:
+        items = Item.objects.filter(name__contains=name)[:10]
+    else:
+        items = Item.objects.all()[:10]
+    if len(items) == 0:
+        return HttpResponse(
+            f"items with name `{name}` not found",
+            status=404,
+            content_type="application/json",
+        )
+
+    return HttpResponse(
+        serialize("json", items), content_type="application/json"
+    )

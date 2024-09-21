@@ -1,8 +1,18 @@
 {% extends 'shop/base.html' %}
+{% load static %}
 {% block title %}Checkout{% endblock %}
+{% block extra_scripts %}
+<script src="{% static 'shop/scripts/checkout.js' %}" defer></script>
+{% endblock %}
 {% block content %}
-<h1>Checkout</h1>
-<form action="POST">
+<form method="POST" class="d-flex flex-column gap-2">
+  <h1>Checkout</h1>
   {% csrf_token %}
-  {{ form }}
+  <div class="form-floating d-flex">
+    <input class="form-control" type="text" placeholder="Search items" id="search_box">
+    <label for="search_box">Search items</label>
+    <img class="px-4" src="{% static 'shop/images/bi-search.svg' %}"></img>
+  </div>
+  <input type="submit" class="btn btn-primary" value="Checkout">
 </form>
+{% endblock %}

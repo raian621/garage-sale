@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.utils.timezone import make_aware
 from datetime import datetime, timezone
+from django.contrib.auth.models import User
 from .models import Item, Order
 from .views import ItemListView
 
@@ -91,6 +92,73 @@ class ItemViewTests(TestCase):
         for item in cls.items:
             item.delete()
 
-    def test_ItemListView_get_context_data(self):
+    def test_get_item_list_request(self):
         res = self.client.get("/shop/")
+        self.assertEqual(200, res.status_code)
+
+    def test_get_item_detail_view(self):
+        res = self.client.get(f"/shop/{self.items[0].id}/")
+        self.assertEqual(200, res.status_code)
+
+    def test_get_item_by_name(self):
+        res = self.client.get("/shop/search/?name=Item")
+        self.assertEquals(200, res.status_code)
+        items = res.json()
+        self.assertEquals(len(items), 5)
+        res = self.client.get("/shop/search/")
+        self.assertEquals(200, res.status_code)
+        items = res.json()
+        self.assertEquals(len(items), 5)
+        res = self.client.get("/shop/search/?name=2")
+        self.assertEquals(200, res.status_code)
+        items = res.json()
+        self.assertEquals(len(items), 1)
+        res = self.client.get("/shop/search/?name=mitochondria")
+        self.assertEquals(404, res.status_code)
+
+
+class AuthenticatedItemViewsTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.user = User.objects.create(username="testuser")
+        cls.user.set_password("password")
+        cls.user.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.user.delete()
+
+    def test_get_item_create_view(self):
+        res = self.client.get("/shop/create/")
+        # create item page should redirect to the login page if the client
+        # isn't authenticated
+        self.assertEqual(302, res.status_code)
+        self.assertTrue(
+            self.client.login(username=self.user.username, password="password")
+        )
+        res = self.client.get("/shop/create/")
+        self.assertEqual(200, res.status_code)
+
+    def test_get_item_update_view(self):
+        item = Item(
+            name="Item 1", description="Description", price_in_cents=100
+        )
+        item.save()
+        res = self.client.get(f"/shop/{item.id}/update/")
+        # create item page should redirect to the login page if the client
+        # isn't authenticated
+        self.assertEqual(302, res.status_code)
+        self.assertTrue(
+            self.client.login(username=self.user.username, password="password")
+        )
+        res = self.client.get(f"/shop/{item.id}/update/")
+        self.assertEqual(200, res.status_code)
+        item.delete()
+
+    def test_get_checkout_view(self):
+        res = self.client.get("/shop/checkout/")
+        self.assertTrue(
+            self.client.login(username=self.user.username, password="password")
+        )
+        res = self.client.get("/shop/checkout/")
         self.assertEqual(200, res.status_code)

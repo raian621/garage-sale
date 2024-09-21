@@ -1,7 +1,10 @@
 {% extends 'shop/base.html' %}
 {% block title %}Items{% endblock %}
 {% block content %}
-<h1>Items</h1>
+<div class="d-flex gap-2 align-content-center">
+  <h1>Items</h1>
+  <a class="btn btn-primary my-auto" href="{% url 'item-create' %}">Add Item</a>
+</div>
 <table class="table table-striped">
   <thead>
     <tr>
@@ -36,7 +39,6 @@
     {% endfor %}
   </tbody>
 </table>
-<a class="btn btn-primary mb-3" href="{% url 'item-create' %}">Add Item</a>
 <nav aria-label="Item pagination controls">
   <ul class="pagination">
     {% if page_obj.has_previous %}
