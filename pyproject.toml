@@ -1,10 +1,10 @@
 [tool.coverage.report]
-omit = ["tests/*", "**/migrations/*"]
+omit = ["**/tests/*", "**/migrations/*"]
 show_missing = true
 
 [tool.pytest.ini_options]
 addopts = "-v"
 testpaths = ["tests"]
 
-[tool.black]
-line_length = 79
+[tool.ruff]
+line-length = 79

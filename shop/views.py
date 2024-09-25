@@ -1,12 +1,12 @@
-from django.views.generic.list import ListView, View
 from django.views.generic import DetailView
+from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.paginator import Paginator
 from django.core.serializers import serialize
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseNotAllowed
-from .models import Item, Order
+from .models import Item, Order, Cart
 from .forms import UpdateItemForm, CheckoutForm
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import render
@@ -23,9 +23,15 @@ class ItemListView(ListView):
         page_obj = paginator.get_page(page_number)
         objects = page_obj.object_list
         costs = list(map(lambda item: item.format_price(), objects))
-        context["object_list"] = zip(objects, costs)
+        context["object_list"] = list(zip(objects, costs))
         context["page_obj"] = page_obj
         return context
+
+    def get_queryset(self):
+        filter_val = self.request.GET.get("filter")
+        if filter_val is None:
+            return Item.objects.all()
+        return Item.objects.filter(name__contains=filter_val)
 
 
 class ItemDetailView(DetailView):
@@ -51,7 +57,7 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
     template_name_suffix = "_update_form"
 
     def get_success_url(self):
-        return reverse("item-detail", kwargs={"pk": self.kwargs["pk"]})
+        return reverse("item-detail", args=(self.object.id,))
 
 
 class ItemDeleteView(LoginRequiredMixin, DeleteView):
@@ -69,13 +75,39 @@ def shop_index(request):
 
 
 @login_required
+def add_item_to_cart(request):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    cart = Cart.get_active_cart(request.user)
+    item = Item.objects.get(id=request.POST.get("item_id"))
+    cart.add_item(item)
+    return HttpResponse()
+
+
+@login_required
+def remove_item_from_cart(request):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    cart = Cart.get_active_cart(request.user)
+    item = Item.objects.get(id=request.POST.get("item_id"))
+    cart.remove_item(item)
+    return HttpResponse()
+
+
+@login_required
 def checkout(request):
     if request.method == "GET":
         return render(
             request, "shop/checkout.html", context={"form": CheckoutForm}
         )
     elif request.method == "POST":
-        return HttpResponse("POST")
+        cart = Cart.get_active_cart(request.user)
+        cart.checkout(
+            first_name=request.POST.get("first_name"),
+            last_name=request.POST.get("last_name"),
+            email=request.POST.get("email"),
+        )
+        return HttpResponse()
     return HttpResponseNotAllowed(["GET", "POST"])
 
 

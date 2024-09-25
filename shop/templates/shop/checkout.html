@@ -9,10 +9,12 @@
   <h1>Checkout</h1>
   {% csrf_token %}
   <div class="form-floating d-flex">
-    <input class="form-control" type="text" placeholder="Search items" id="search_box">
+    <input class="form-control" type="text" placeholder="Search items" id="search_box" list="search_datalist">
     <label for="search_box">Search items</label>
     <img class="px-4" src="{% static 'shop/images/bi-search.svg' %}"></img>
   </div>
+  <ul id="search_results"></ul>
   <input type="submit" class="btn btn-primary" value="Checkout">
 </form>
+<div id="cart_items"></div>
 {% endblock %}

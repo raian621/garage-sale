@@ -5,6 +5,11 @@
   <h1>Items</h1>
   <a class="btn btn-primary my-auto" href="{% url 'item-create' %}">Add Item</a>
 </div>
+<form class="input-group mb-3">
+  <input name="filter" type="text" class="form-control" placeholder="Search" aria-label="Search bar for items">
+  <input type="submit" class="btn btn-outline-secondary" type="button" value="Search"></input>
+</form>
+{% if object_list %}
 <table class="table table-striped">
   <thead>
     <tr>
@@ -21,9 +26,7 @@
         <span>{{item.id}}</span>
       </td>
       <td>
-        <a href="{% url 'item-detail' item.id %}">
-          {{ item.name }} ({{ item.id }})
-        </a>
+        <a href="{% url 'item-detail' item.id %}">{{ item.name }}</a>
       </td>
       <td>
         <span>{{ cost }}</span>
@@ -53,5 +56,8 @@
     <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
     {% endif %}
   </ul>
-</div>
+</nav>
+{% else %}
+<div class="alert alert-secondary">No items found...</div>
+{% endif %}
 {% endblock %}
