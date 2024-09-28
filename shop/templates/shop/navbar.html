@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <a class="nav-link" href="/">Dashboard</a>
-        <a class="nav-link" href="{% url 'item-index' %}">Items</a>
+        <a class="nav-link" href="{% url 'item-list' %}">Items</a>
         <a class="nav-link" href="{% url 'checkout' %}">Checkout</a>
         {% if user.is_authenticated %}
         <div class="nav-item dropdown">

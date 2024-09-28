@@ -8,3 +8,18 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 79
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "COM812", "D203", "D212", "D413", "E501", "EM101", "ISC001", "RUF012", "TRY003"
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/*" = ["D", "ANN", "S", "PT009", "COM812"]
+"**/migrations/*" = ["ALL"]

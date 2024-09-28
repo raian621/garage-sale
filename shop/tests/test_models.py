@@ -1,7 +1,8 @@
-from shop.models import Item, Cart
-from django.utils import timezone
-from django.test import TestCase
 from django.contrib.auth.models import User
+from django.test import TestCase
+from django.utils import timezone
+
+from shop.models import Cart, Item
 
 
 class ItemModelTests(TestCase):
@@ -18,6 +19,16 @@ class ItemModelTests(TestCase):
         self.assertEqual(item.format_price(), "$1,452.12")
         item.price_in_cents = 1_000_000_000_000
         self.assertEqual(item.format_price(), "$10,000,000,000.00")
+
+    def test_is_sold(self):
+        item = Item(
+            name="Enchilada",
+            description="Mijo, here's an enchilada",
+            price_in_cents=302,
+        )
+        self.assertFalse(item.is_sold())
+        item.sold_at = timezone.now()
+        self.assertTrue(item.is_sold())
 
 
 class OrderModelTests(TestCase):

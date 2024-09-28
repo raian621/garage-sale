@@ -1,14 +1,20 @@
-from django.test import RequestFactory, TestCase
+from __future__ import annotations
+
+from http import HTTPStatus
+
 from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase
+from django.urls import reverse
 from django.utils import timezone
-from shop.models import Item, Cart, Order
+
+from shop.models import Cart, Item, Order
 from shop.views import (
     ItemCreateView,
     ItemUpdateView,
-    shop_index,
     add_item_to_cart,
-    remove_item_from_cart,
     checkout,
+    remove_item_from_cart,
+    shop_index,
 )
 
 
@@ -39,26 +45,10 @@ class ItemViewTests(TestCase):
         res = self.client.get(f"/shop/{self.items[0].id}/")
         self.assertEqual(200, res.status_code)
 
-    def test_get_item_by_name(self):
-        res = self.client.get("/shop/search/?name=Item")
-        self.assertEquals(200, res.status_code)
-        items = res.json()
-        self.assertEquals(len(items), 5)
-        res = self.client.get("/shop/search/")
-        self.assertEquals(200, res.status_code)
-        items = res.json()
-        self.assertEquals(len(items), 5)
-        res = self.client.get("/shop/search/?name=2")
-        self.assertEquals(200, res.status_code)
-        items = res.json()
-        self.assertEquals(len(items), 1)
-        res = self.client.get("/shop/search/?name=mitochondria")
-        self.assertEquals(404, res.status_code)
-
     def test_get_index(self):
         request = self.factory.get("/shop/")
         response = shop_index(request)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_item_create_success_url(self):
         request = self.factory.get("/shop/create/")
@@ -67,7 +57,7 @@ class ItemViewTests(TestCase):
         view.object = Item.objects.create(
             name="Item", description="Description", price_in_cents=0
         )
-        self.assertEquals(view.get_success_url(), f"/shop/{view.object.id}/")
+        self.assertEqual(view.get_success_url(), f"/shop/{view.object.id}/")
         view.object.delete()
 
     def test_get_item_update_success_url(self):
@@ -78,7 +68,7 @@ class ItemViewTests(TestCase):
         view = ItemUpdateView()
         view.object = item
         view.setup(request)
-        self.assertEquals(view.get_success_url(), f"/shop/{item.id}/")
+        self.assertEqual(view.get_success_url(), f"/shop/{item.id}/")
         item.delete()
 
 
@@ -134,7 +124,8 @@ class CartViewsTests(TestCase):
     def setUpClass(cls):
         cls.password = "password"
         cls.user = User.objects.create_user(
-            username="test_user", password=cls.password
+            username="test_user",
+            password=cls.password,
         )
         cls.factory = RequestFactory()
 
@@ -178,13 +169,14 @@ class CartViewsTests(TestCase):
             )
             request.user = self.user
             res = add_item_to_cart(request)
-            self.assertEqual(200, res.status_code)
+            self.assertEqual(HTTPStatus.FOUND, res.status_code)
+            self.assertEqual(reverse("item-list"), res.headers.get("Location"))
             self.assertListEqual(list(cart.items.all()), self.items[: i + 1])
         cart.delete()
 
     def test_remove_item_from_cart(self):
         cart = Cart.get_active_cart(self.user)
-        for i, item in enumerate(self.items):
+        for item in self.items:
             cart.add_item(item)
         while self.items:
             item = self.items.pop()
@@ -193,7 +185,8 @@ class CartViewsTests(TestCase):
             )
             request.user = self.user
             res = remove_item_from_cart(request)
-            self.assertEqual(200, res.status_code)
+            self.assertEqual(HTTPStatus.FOUND, res.status_code)
+            self.assertEqual(reverse("item-list"), res.headers.get("Location"))
             self.assertListEqual(list(cart.items.all()), self.items)
         cart.delete()
 
@@ -209,14 +202,14 @@ class CartViewsTests(TestCase):
             data={
                 "first_name": first_name,
                 "last_name": last_name,
-                "email": email
-            }
+                "email": email,
+            },
         )
         request.user = self.user
         before = timezone.now()
         res = checkout(request)
         after = timezone.now()
-        self.assertEqual(200, res.status_code)
+        self.assertEqual(HTTPStatus.FOUND, res.status_code)
         cart.refresh_from_db()
         self.assertFalse(cart.active)
         order = Order.objects.get(cart=cart)

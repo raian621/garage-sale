@@ -1,0 +1,1 @@
+"""Garage sale app module."""

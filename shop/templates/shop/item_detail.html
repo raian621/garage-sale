@@ -4,7 +4,7 @@
 {% block content %}
 <div class="d-flex align-items-center gap-3">
   <h1>{{ object.name }}</h1>
-  <a href="{% url 'item-update' object.id %}">
+    <a href="{% url 'item-update' object.id %}">
     <img height="30" src="{% static 'shop/pencil.svg' %}"></img>
   </a>
 </div>

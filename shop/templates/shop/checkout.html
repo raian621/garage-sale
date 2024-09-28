@@ -1,20 +1,51 @@
 {% extends 'shop/base.html' %}
-{% load static %}
 {% block title %}Checkout{% endblock %}
-{% block extra_scripts %}
-<script src="{% static 'shop/scripts/checkout.js' %}" defer></script>
-{% endblock %}
 {% block content %}
 <form method="POST" class="d-flex flex-column gap-2">
   <h1>Checkout</h1>
   {% csrf_token %}
-  <div class="form-floating d-flex">
-    <input class="form-control" type="text" placeholder="Search items" id="search_box" list="search_datalist">
-    <label for="search_box">Search items</label>
-    <img class="px-4" src="{% static 'shop/images/bi-search.svg' %}"></img>
+  {% if form.name.errors %}
+  {% for error in form.name.errors %}
+  <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endfor %}
+  {% endif %}
+  <div class="form-floating">
+    <input
+      type="text"
+      class="form-control"
+      name="{{ form.first_name.name }}"
+      id="{{ form.first_name.id_for_label }}"
+      placeholder="First name"
+    />
+    <label for="{{ form.first_name.id_for_label }}">First name</label>
   </div>
-  <ul id="search_results"></ul>
+  <div class="form-floating">
+    <input
+      type="text"
+      class="form-control"
+      name="{{ form.last_name.name }}"
+      id="{{ form.last_name.id_for_label }}"
+      placeholder="Last name"
+    />
+    <label for="{{ form.last_name.id_for_label }}">Last name</label>
+  </div>
+  <div class="form-floating">
+    <input
+      type="email"
+      class="form-control"
+      name="{{ form.email.name }}"
+      id="{{ form.email.id_for_label }}"
+      placeholder="Email"
+    />
+    <label for="{{ form.email.id_for_label }}">Email</label>
+  </div>
   <input type="submit" class="btn btn-primary" value="Checkout">
 </form>
-<div id="cart_items"></div>
+{% if cart_items %}
+<ul id="cart_items">
+  {% for item in cart_items %}
+  <li>{{ item.name }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}

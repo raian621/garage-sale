@@ -5,9 +5,33 @@
   <h1>Items</h1>
   <a class="btn btn-primary my-auto" href="{% url 'item-create' %}">Add Item</a>
 </div>
-<form class="input-group mb-3">
-  <input name="filter" type="text" class="form-control" placeholder="Search" aria-label="Search bar for items">
-  <input type="submit" class="btn btn-outline-secondary" type="button" value="Search"></input>
+<form class="my-3 d-flex flex-column gap-3">
+  <div class="input-group">
+    <input 
+      name="filter"
+      type="text"
+      class="form-control"
+      placeholder="Search"
+      aria-label="Search bar for items"
+      {% if 'filter' in request.GET %}
+      value={{ request.GET.filter }}
+      {% endif %}
+    >
+    <input type="submit" class="btn btn-outline-secondary" type="button" value="Search"></input>
+  </div>
+  <div class="form-check">
+    <input 
+      type="checkbox"
+      class="form-check-input"
+      id="include-sold-checkbox"
+      name="include_sold"
+      value="true"
+      {% if 'include_sold' in request.GET and request.GET.include_sold %}
+      checked
+      {% endif %}
+    >
+    <label for="include-sold-checkbox" class="form-check-label">Include sold items</label>
+  </div>
 </form>
 {% if object_list %}
 <table class="table table-striped">
@@ -16,11 +40,12 @@
       <th>ID</th>
       <th>Name</th>
       <th>Cost</th>
+      <th>Sold</th>
       <th>Actions</th>
     </tr>
   </thead>
   <tbody>
-    {% for item, cost in object_list %}
+    {% for item, cost, sold in object_list %}
     <tr>
       <td>
         <span>{{item.id}}</span>
@@ -31,11 +56,19 @@
       <td>
         <span>{{ cost }}</span>
       </td>
+      <td>
+        <span>{{ sold }}</span>
+      </td>
       <td style="display: flex; gap: 5px;">
         <a class="btn btn-warning" href="{% url 'item-update' item.id %}">Update</a>
         <form action="{% url 'item-delete' item.id %}" method="POST">
           {% csrf_token %}
           <button class="btn btn-danger" type="submit">Delete</button>
+        </form>
+        <form action="{% url 'cart-add' %}" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="item_id" value="{{ item.id }}"/>
+          <button class="btn btn-primary" type="submit" {% if sold %}disabled{% endif %}>Add to Cart</button>
         </form>
       </td>
     </tr>

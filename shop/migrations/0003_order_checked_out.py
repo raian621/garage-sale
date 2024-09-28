@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("shop", "0002_remove_cart_customer_remove_cart_items_order_and_more"),
     ]

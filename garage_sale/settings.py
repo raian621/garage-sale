@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
+import logging
+import sys
 from os import environ
+from pathlib import Path
+
 from dotenv import load_dotenv
 
 # load environment variables from a .env file, if it exists
@@ -27,16 +30,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = environ.get("MODE", "PROD") == "DEBUG"
 
-# SECURITY WARNING: keep the secret key used in production secret!
-default_secret_key = (
-    "django-insecure-908^duoo6#52sj)1om5!hh-&uj3nsg$x(!bv3zygw&%=-+ngv3"
-)
-SECRET_KEY = environ.get("SECRET_KEY", default_secret_key)
-if SECRET_KEY == default_secret_key and not DEBUG:
-    print(
-        "WARNING: The server should not be started in production using the default secret key!"
+SECRET_KEY = environ.get("SECRET_KEY", None)
+if SECRET_KEY is None:
+    logging.error(
+        "No secret key provided! Please set it your environment variables as "
+        "`SECRET_KEY`."
     )
-    exit(1)
+    sys.exit(1)
 
 
 ALLOWED_HOSTS = []
