@@ -16,3 +16,4 @@ python manage.py runserver
 
 - `MODE`: `DEBUG` for debug mode, `PROD` (default) for production mode
 - `SECRET_KEY`: secret key used for encryption and signing
+- `HOSTNAME`: the hostname of the garage sale server, defaults to `127.0.0.1`
