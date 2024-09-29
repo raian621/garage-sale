@@ -39,9 +39,7 @@ if SECRET_KEY is None:
     sys.exit(1)
 
 
-ALLOWED_HOSTS = [
-    environ.get("HOSTNAME", "127.0.0.1")
-]
+ALLOWED_HOSTS = [environ.get("HOSTNAME", "127.0.0.1")]
 
 INTERNAL_IPS = [
     "127.0.0.1",
