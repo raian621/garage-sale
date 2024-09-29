@@ -186,7 +186,7 @@ class CartViewsTests(TestCase):
             request.user = self.user
             res = remove_item_from_cart(request)
             self.assertEqual(HTTPStatus.FOUND, res.status_code)
-            self.assertEqual(reverse("item-list"), res.headers.get("Location"))
+            self.assertEqual(reverse("checkout"), res.headers.get("Location"))
             self.assertListEqual(list(cart.items.all()), self.items)
         cart.delete()
 

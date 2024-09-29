@@ -2,7 +2,7 @@
 {% block title %}New Item{% endblock %}
 {% block content %}
 <h1>New Item</h1>
-<form method="POST" class="d-flex gap-2 flex-column">
+<form method="POST" class="d-flex gap-3 flex-column">
   {% csrf_token %}
   {% if form.name.errors %}
   {% for error in form.name.errors %}

@@ -1,7 +1,7 @@
 {% extends 'shop/base.html' %}
 {% block title %}Items{% endblock %}
 {% block content %}
-<div class="d-flex gap-2 align-content-center">
+<div class="d-flex gap-3 align-content-center">
   <h1>Items</h1>
   <a class="btn btn-primary my-auto" href="{% url 'item-create' %}">Add Item</a>
 </div>
@@ -34,7 +34,7 @@
   </div>
 </form>
 {% if object_list %}
-<table class="table table-striped">
+<table class="table table-striped align-middle">
   <thead>
     <tr>
       <th>ID</th>
@@ -59,17 +59,19 @@
       <td>
         <span>{{ sold }}</span>
       </td>
-      <td style="display: flex; gap: 5px;">
+      <td>
+      <div class="d-flex gap-2">
         <a class="btn btn-warning" href="{% url 'item-update' item.id %}">Update</a>
         <form action="{% url 'item-delete' item.id %}" method="POST">
           {% csrf_token %}
-          <button class="btn btn-danger" type="submit">Delete</button>
+          <input class="btn btn-danger" type="submit" value="Delete"/>
         </form>
         <form action="{% url 'cart-add' %}" method="POST">
           {% csrf_token %}
           <input type="hidden" name="item_id" value="{{ item.id }}"/>
-          <button class="btn btn-primary" type="submit" {% if sold %}disabled{% endif %}>Add to Cart</button>
+          <input class="btn btn-primary" type="submit" {% if sold %}disabled{% endif %} value="Add to Cart"/>
         </form>
+      </div>
       </td>
     </tr>
     {% endfor %}

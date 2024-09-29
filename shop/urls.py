@@ -16,5 +16,5 @@ urlpatterns = [
     ),
     path("checkout/", views.checkout, name="checkout"),
     path("cart/add/", views.add_item_to_cart, name="cart-add"),
-    path("cart/remove/", views.add_item_to_cart, name="cart-remove"),
+    path("cart/remove/", views.remove_item_from_cart, name="cart-remove"),
 ]

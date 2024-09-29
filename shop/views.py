@@ -184,12 +184,13 @@ def remove_item_from_cart(request: HttpRequest) -> HttpResponse:
     Returns:
         response (HttpResponse): The HTTP response to the request.
     """
+    print(request)
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
     cart = Cart.get_active_cart(request.user)
     item = Item.objects.get(id=request.POST.get("item_id"))
     if cart.remove_item(item):
-        return redirect(reverse("item-list"))
+        return redirect(reverse("checkout"))
     return HttpResponse(status=HTTPStatus.BAD_REQUEST)
 
 

@@ -1,4 +1,5 @@
 {% extends 'shop/base.html' %}
+{% load static %}
 {% block title %}Checkout{% endblock %}
 {% block content %}
 <form method="POST" class="d-flex flex-column gap-2">
@@ -42,9 +43,22 @@
   <input type="submit" class="btn btn-primary" value="Checkout">
 </form>
 {% if cart_items %}
+<h2 class="my-3">Cart</h2>
 <div class="my-3 d-flex flex-column gap-3">
   {% for item in cart_items %}
-  <li>{{ item.name }}</li>
+  <div class="d-flex gap-3 p-3 justify-content-between align-items-center border rounded">
+    <div>
+      <h3>{{ item.name }}</h3>
+      <span>{{ item.description|truncatechars:100 }}</span>
+    </div>
+    <form action="{% url 'cart-remove' %}" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="item_id" value="{{ item.id }}"/>
+      <button type="submit" class="btn btn-link">
+        <img height="30" fill="red" style="fill: red" src="{% static 'shop/images/bi-trash.svg' %}"/>
+      </button>
+    </form>
+  </div>
   {% endfor %}
 </div>
 {% endif %}
