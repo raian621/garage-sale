@@ -190,6 +190,34 @@ class CartViewsTests(TestCase):
             self.assertListEqual(list(cart.items.all()), self.items)
         cart.delete()
 
+    def test_add_sold_item_to_cart(self):
+        cart = Cart.get_active_cart(self.user)
+        self.items[0].sold_at = timezone.now()
+        self.items[0].save()
+        for item in self.items:
+            request = self.factory.post(
+                reverse("cart-add"), {"item_id": item.id}
+            )
+            request.user = self.user
+            res = add_item_to_cart(request)
+            if item.is_sold():
+                self.assertEqual(HTTPStatus.BAD_REQUEST, res.status_code)
+            else:
+                self.assertEqual(HTTPStatus.FOUND, res.status_code)
+        self.assertListEqual(list(cart.items.all()), self.items[1:])
+        cart.delete()
+
+    def test_remove_item_not_in_cart(self):
+        not_in_cart = Item.objects.create(
+            name="THE Item", description="THE description", price_in_cents=100
+        )
+        request = self.factory.post(
+            reverse("cart-remove"), {"item_id": not_in_cart.id}
+        )
+        request.user = self.user
+        res = remove_item_from_cart(request)
+        self.assertEqual(HTTPStatus.BAD_REQUEST, res.status_code)
+
     def test_checkout(self):
         cart = Cart.get_active_cart(self.user)
         for item in self.items:

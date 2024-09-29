@@ -72,13 +72,52 @@ class CartModelTests(TestCase):
             ),
         ]
         for item in items:
-            self.cart.add_item(item)
+            self.assertTrue(self.cart.add_item(item))
         self.assertListEqual(list(self.cart.items.all()), items)
         while items:
             item = items.pop()
-            self.cart.remove_item(item)
+            self.assertTrue(self.cart.remove_item(item))
             self.assertListEqual(list(self.cart.items.all()), items)
             item.delete()
+
+    def test_add_sold_item(self):
+        items = [
+            Item.objects.create(
+                name="Item 1", description="Description 1", price_in_cents=12
+            ),
+            Item.objects.create(
+                name="Item 2",
+                description="Description 2",
+                price_in_cents=34,
+                sold_at=timezone.now(),
+            ),
+        ]
+        for item in items:
+            if item.is_sold():
+                self.assertFalse(self.cart.add_item(item))
+            else:
+                self.assertTrue(self.cart.add_item(item))
+        for item in items:
+            item.delete()
+
+    def test_remove_item_not_in_cart(self):
+        items = [
+            Item.objects.create(
+                name="Item 1", description="Description 1", price_in_cents=12
+            ),
+            Item.objects.create(
+                name="Item 2", description="Description 2", price_in_cents=34
+            ),
+        ]
+        for item in items:
+            self.assertTrue(self.cart.add_item(item))
+        item_not_in_cart = Item.objects.create(
+            name="Item 3", description="Description 3", price_in_cents=32
+        )
+        self.assertFalse(self.cart.remove_item(item_not_in_cart))
+        for item in items:
+            item.delete()
+        item_not_in_cart.delete()
 
     def test_checkout(self):
         items = [

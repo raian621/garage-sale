@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 from django.contrib.auth.decorators import login_required
@@ -167,8 +168,9 @@ def add_item_to_cart(request: HttpRequest) -> HttpResponse:
         return HttpResponseNotAllowed(["POST"])
     cart = Cart.get_active_cart(request.user)
     item = Item.objects.get(id=request.POST.get("item_id"))
-    cart.add_item(item)
-    return redirect(reverse("item-list"))
+    if cart.add_item(item):
+        return redirect(reverse("item-list"))
+    return HttpResponse(status=HTTPStatus.BAD_REQUEST)
 
 
 @login_required
@@ -186,8 +188,9 @@ def remove_item_from_cart(request: HttpRequest) -> HttpResponse:
         return HttpResponseNotAllowed(["POST"])
     cart = Cart.get_active_cart(request.user)
     item = Item.objects.get(id=request.POST.get("item_id"))
-    cart.remove_item(item)
-    return redirect(reverse("item-list"))
+    if cart.remove_item(item):
+        return redirect(reverse("item-list"))
+    return HttpResponse(status=HTTPStatus.BAD_REQUEST)
 
 
 @login_required

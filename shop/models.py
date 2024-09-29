@@ -65,16 +65,22 @@ class Cart(models.Model):
         """
         return f"Cart {self.id}"
 
-    def add_item(self, item: Item) -> None:
+    def add_item(self, item: Item) -> bool:
         """
         Add an item to the cart.
 
         Args:
             item (Item): Item to add to the cart.
+
+        Returns:
+            bool: Whether the item was able to be added to the cart.
         """
+        if item.is_sold():
+            return False
         self.total_in_cents += item.price_in_cents
         self.items.add(item)
         self.save()
+        return True
 
     def remove_item(self, item: Item) -> None:
         """
@@ -83,9 +89,12 @@ class Cart(models.Model):
         Args:
             item (Item): Item to remove from the cart.
         """
+        if item not in self.items.all():
+            return False
         self.total_in_cents -= item.price_in_cents
         self.items.remove(item)
         self.save()
+        return True
 
     def checkout(
         self,

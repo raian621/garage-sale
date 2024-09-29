@@ -42,10 +42,10 @@
   <input type="submit" class="btn btn-primary" value="Checkout">
 </form>
 {% if cart_items %}
-<ul id="cart_items">
+<div class="my-3 d-flex flex-column gap-3">
   {% for item in cart_items %}
   <li>{{ item.name }}</li>
   {% endfor %}
-</ul>
+</div>
 {% endif %}
 {% endblock %}
